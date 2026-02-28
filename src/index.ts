@@ -27,14 +27,17 @@ async function buildConfig(options: OptionValues, logger: Logger): Promise<Confi
       process.exit(1);
     }
 
+    const shell = process.platform === "win32" ? "cmd.exe" : "sh";
+    const shellArg = process.platform === "win32" ? "/c" : "-c";
+
     config = {
       lsps: [
         {
           id: "lsp",
           extensions: [],
           languages: [],
-          command: "sh",
-          args: ["-c", options.lsp],
+          command: shell,
+          args: [shellArg, options.lsp],
         },
       ]
     };

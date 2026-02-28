@@ -1,6 +1,7 @@
 import * as protocol from "vscode-languageserver-protocol";
 import * as path from "path";
 import * as fs from "fs/promises";
+import { fileURLToPath, pathToFileURL } from "url";
 import { LspClient } from "./lsp";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
 import { JSONSchema4 } from "json-schema";
@@ -25,16 +26,16 @@ export interface LSPMethods {
 
 // Converts /path/to/file to file:///path/to/file
 function pathToFileUri(path: string): string {
-  return `file://${path}`
+  return pathToFileURL(path).toString();
 }
 
 // convert file:///path/to/file to /path/to/file
 function fileUriToPath(uri: string): string {
-  if (uri.startsWith("file://")) {
-    return path.resolve(uri.slice(7));
+  try {
+    return fileURLToPath(uri);
+  } catch (e) {
+    return path.resolve(uri);
   }
-
-  return path.resolve(uri);
 }
 
 // Let's the LSP know about a file contents
